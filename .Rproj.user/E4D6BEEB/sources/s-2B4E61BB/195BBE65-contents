@@ -1,0 +1,10 @@
+exportPattern("^[[:alpha:]]+")
+
+export(bin_probability)
+export(bin_distribution)
+export(plot_bindis)
+export(bin_cumulative)
+export(plot_bincum)
+export(bin_variable)
+export(print.binvar)
+export(summary.binvar)

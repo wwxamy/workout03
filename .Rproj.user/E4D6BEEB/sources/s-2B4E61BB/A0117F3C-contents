@@ -1,0 +1,88 @@
+check_prob <- function(prob){
+  if (prob < 0) {
+    stop("p has to be a number betwen 0 and 1")
+  }
+  if (prob > 1) {
+    stop("p has to be a number betwen 0 and 1")
+  }
+}
+
+check_trials <- function(trials){
+  if (trials < 0) {
+    stop("invalid trials value")
+  }
+}
+
+check_success <- function(success, trials){
+  if (success < 0) {
+    stop("invalid success value")
+  }
+  if (success > trials) {
+    stop("success need to be equal or less than trials")
+  }
+}
+
+#' @title n choose k
+#' @description Number of combinations in which k successes can occur in n trials
+#' @param n trials
+#' @param k number of successive times of occurance
+#' @return n choose k
+#' @export
+bin_choose <- function(n, k){
+  if (k > n) {
+    stop("k cannot be greater than n")
+  }
+  factorial(n)/(factorial(k)*(factorial(n-k)))
+}
+
+#' @title probability of success
+#' @description calculating the probability in which k successes can occur in n trials
+#' @param success number of successes
+#' @param trials number of trials
+#' @param prob probability of success
+#' @return n choose k
+#' @export
+bin_probability <- function(success, trials, prob){
+  check_trials(trials = trials)
+  check_prob(prob = prob)
+  check_success(success = success, trials = trials)
+  bin_choose(n = trials, k = success)*prob^success*(1-prob)^(trials-success)
+}
+
+#' @title Probability dataframe
+#' @description dataframe showing probability of different number of successes
+#' @param trials number of trials
+#' @param prob probability of success
+#' @return dataframe
+#' @export
+bin_distribution <- function(trials, prob){
+  dataframe <- data.frame(success = 1:trials, probability = bin_probability(success = 1:trials, trials = trials, prob = prob))
+  print(dataframe)
+}
+
+#' @export
+plot_bindis <- function(trials, prob) {
+  dis1 <- bin_distribution(trials = trials, prob = prob)
+  barplot(dis1$prob, xlab = "success", ylab = "probability")
+}
+
+#' @title Cumulative distribution
+#' @description dataframe showing cumulative distribution of different number of successes
+#' @param trials number of trials
+#' @param prob probability of success
+#' @return dataframe
+#' @export
+bin_cumulative <- function(trials, prob){
+  dataframe <- data.frame(success = 0:trials, probability = bin_probability(success = 0:trials, trials = trials, prob = prob))
+  for (i in 1:(trials+1)) {
+    dataframe$cumulative[i] <-sum(dataframe$probability[1:i])
+  }
+  print(dataframe)
+}
+
+#' @export
+plot_bincum <- function(trials, prob) {
+  dis2 <- bin_cumulative(trials = trials, prob = prob)
+  plot(dis2$cumulative, xlab = "success", ylab = "probability")
+  lines(dis2$cumulative)
+}

@@ -1,0 +1,194 @@
+---
+title: "Workout 3"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+check_prob <- function(prob){
+  if (prob < 0) {
+    stop("p has to be a number betwen 0 and 1")
+   }
+  if (prob > 1) {
+    stop("p has to be a number betwen 0 and 1")
+  }
+}
+
+check_trials <- function(trials){
+  if (trials < 0) {
+    stop("invalid trials value")
+  }
+}
+
+check_success <- function(success, trials){
+  if (success < 0) {
+    stop("invalid success value")
+   }
+  if (success > trials) {
+    stop("success need to be equal or less than trials")
+  }
+}
+
+aux_mean <- function(trials, prob){
+  return(trials*prob)
+}
+
+aux_variance <- function(trials, prob){
+  trials*prob*(1-prob)
+}
+
+aux_mode <- function(trials, prob){
+  if (is.integer(((trials*prob)+prob)) == FALSE) {
+    return(floor(((trials*prob)+prob)))
+  }
+  if (is.integer(((trials*prob)+prob)) == TRUE) {
+    return((floor(trials*prob)+prob-1), floor((trials*prob)+prob))
+  }
+}
+
+aux_skewness <- function(trials, prob){
+  (1-2*prob)/sqrt(trials*prob*(1-prob))
+}
+
+aux_kurtosis <- function(trials, prob){
+  (1-6*prob*(1-prob))/(trials*prob*(1-prob))
+}
+
+aux_mean(10, 0.3)
+aux_variance(10, 0.3)
+aux_mode(10, 0.3)
+aux_skewness(10, 0.3)
+aux_kurtosis(10, 0.3)
+
+#' @title n choose k
+#' @description Number of combinations in which k successes can occur in n trials
+#' @param n trials
+#' @param k number of successive times of occurance
+#' @return n choose k
+#' @export
+bin_choose <- function(n, k){
+  if (k > n) {
+    stop("k cannot be greater than n")
+  }
+  factorial(n)/(factorial(k)*(factorial(n-k)))
+}
+
+bin_choose(n = 3, k = 6)
+bin_choose(5, 0)
+bin_choose(5, 1:3)
+
+#' @title probability of success
+#' @description calculating the probability in which k successes can occur in n trials
+#' @param success number of successes
+#' @param trials number of trials
+#' @param prob probability of success
+#' @return n choose k
+#' @export
+bin_probability <- function(success, trials, prob){
+  check_trials(trials = trials)
+  check_prob(prob = prob)
+  check_success(success = success, trials = trials)
+  bin_choose(n = trials, k = success)*prob^success*(1-prob)^(trials-success)
+}
+
+bin_probability(success = 2:4, trials = 5, prob = 0.5)
+bin_probability(success = 0:2, trials = 5, prob = 0.5)
+bin_probability(success = 55, trials = 100, prob = 0.45)
+
+
+#' @title Probability dataframe
+#' @description dataframe showing probability of different number of successes
+#' @param trials number of trials
+#' @param prob probability of success
+#' @return dataframe
+#' @export
+bin_distribution <- function(trials, prob){
+  dataframe <- data.frame(success = 1:trials, probability = bin_probability(success = 1:trials, trials = trials, prob = prob))
+  print(dataframe)
+}
+
+nrow(bin_distribution(trials = 5, prob = 0.5))
+
+#' @export bargraph
+plot_bindis <- function(trials, prob) {
+  dis1 <- bin_distribution(trials = trials, prob = prob)
+  barplot(dis1$prob, xlab = "success", ylab = "probability")
+}
+
+plot_bindis(trials = 5, prob = 0.5)
+
+#' @title Cumulative distribution
+#' @description dataframe showing cumulative distribution of different number of successes
+#' @param trials number of trials
+#' @param prob probability of success
+#' @return dataframe
+#' @export
+bin_cumulative <- function(trials, prob){
+  dataframe <- data.frame(success = 0:trials, probability = bin_probability(success = 0:trials, trials = trials, prob = prob))
+  for (i in 1:(trials+1)) {
+    dataframe$cumulative[i] <-sum(dataframe$probability[1:i]) 
+  }
+  print(dataframe)
+}
+
+bin_cumulative(trials = 5, prob = 0.5)
+
+#' @export
+plot_bincum <- function(trials, prob) {
+  dis2 <- bin_cumulative(trials = trials, prob = prob)
+  plot(dis2$cumulative, xlab = "success", ylab = "probability")
+  lines(dis2$cumulative)
+}
+
+plot_bincum(trials = 5, prob = 0.5)
+
+#' @title binomial random variable object
+#' @description return binomial random variable object
+#' @param trials number of trials
+#' @param prob probability of success
+#' @return binomial random variable object
+#' @export
+bin_variable <- function(trials, prob){
+  check_prob(prob = prob)
+  check_trials(trials = trials)
+  list <- list("trials" = trials, "prob" = prob)
+  class(list) <- "binvar"
+  return(list)
+}
+
+bin_variable(trials = 10, p = 0.3)
+
+
+#' @export
+print.binvar <- function(trials, prob){
+  cat('"Binomial variable"\n')
+  cat('Parameters\n')
+  cat(sprintf('trials: "%s"', trials), "\n")
+  cat(sprintf('prob: "%s"', prob),"\n")
+  invisible(x)
+}
+
+print.binvar(trials = 10, prob = 0.3)
+
+
+#' @export
+summary.binvar <- function(trials, prob){
+  cat('"Binomial variable"\n', "\n")
+  cat('Parameters\n')
+  cat(sprintf('trials: "%s"', trials), "\n")
+  cat(sprintf('prob: "%s"', prob),"\n", "\n")
+  cat('Measures\n')
+  cat(sprintf('mean: "%s"', aux_mean(trials = trials, prob = prob)), "\n")
+  cat(sprintf('variance: "%s"', aux_variance(trials = trials, prob = prob)),"\n")
+  cat(sprintf('mode: "%s"', aux_mode(trials = trials, prob = prob)),"\n")
+  cat(sprintf('skewness: "%s"', aux_skewness(trials = trials, prob = prob)),"\n")
+  cat(sprintf('kurtosis: "%s"', aux_kurtosis(trials = trials, prob = prob)),"\n")
+  invisible(x)
+}
+
+summary.binvar(trials = 10, prob = 0.3)
+```
+

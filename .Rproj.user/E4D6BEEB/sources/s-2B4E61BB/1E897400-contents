@@ -1,0 +1,37 @@
+check_prob <- function(prob){
+  if (prob < 0) {
+    stop("p has to be a number betwen 0 and 1")
+  }
+  if (prob > 1) {
+    stop("p has to be a number betwen 0 and 1")
+  }
+}
+
+check_trials <- function(trials){
+  if (trials < 0) {
+    stop("invalid trials value")
+  }
+}
+
+check_success <- function(success, trials){
+  if (success < 0) {
+    stop("invalid success value")
+  }
+  if (success > trials) {
+    stop("success need to be equal or less than trials")
+  }
+}
+
+#' @title binomial random variable object
+#' @description return binomial random variable object
+#' @param trials number of trials
+#' @param prob probability of success
+#' @return binomial random variable object
+#' @export
+bin_variable <- function(trials, prob){
+  check_prob(prob = prob)
+  check_trials(trials = trials)
+  list <- list("trials" = trials, "prob" = prob)
+  class(list) <- "binvar"
+  return(list)
+}
