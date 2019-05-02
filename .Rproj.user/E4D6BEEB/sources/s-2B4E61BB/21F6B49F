@@ -1,0 +1,23 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1556778147688.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "21F6B49F",
+    "lastKnownWriteTime" : 1556778276,
+    "last_content_update" : 1556778276452,
+    "path" : "~/Desktop/Stats 133/workout03/binomial/readme.Rmd",
+    "project_path" : "readme.Rmd",
+    "properties" : {
+        "cursorPosition" : "2,21",
+        "scrollLine" : "0",
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_markdown"
+}
